@@ -1,18 +1,19 @@
 // src/db.js
-import dotenv from "dotenv";
-import mysql from "mysql2/promise";
+// Denne filen kobler til SQLite-databasen (filbasert).
 
-dotenv.config();
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+// Finner absolutt sti til databasefilen
+const dbPath = path.join(__dirname, 'chattApp.db');
+
+// Åpner databasen
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Feil ved åpning av SQLite-database:', err.message);
+  } else {
+    console.log('Tilkoblet SQLite-database:', dbPath);
+  }
 });
 
-export default pool;
+module.exports = db;

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ChattApp</title>
+  </head>
+  <body>
+    <h1>ChattApp</h1>
+    <p>Rom hentet fra /api/rooms:</p>
+    <ul id="rooms"></ul>
+
+    <script>
+      fetch('/api/rooms')
+        .then((res) => res.json())
+        .then((rooms) => {
+          const list = document.getElementById('rooms');
+          rooms.forEach((room) => {
+            const li = document.createElement('li');
+            li.textContent = room.name;
+            list.appendChild(li);
+          });
+        })
+        .catch((err) => console.error(err));
+    </script>
+  </body>
+</html>

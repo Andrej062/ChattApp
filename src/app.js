@@ -1,25 +1,22 @@
 // src/app.js
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+// Her setter vi opp Express, statiske filer og ruter.
 
-import roomsRouter from "./routes/rooms.js";
-import messagesRouter from "./routes/messages.js";
+const express = require('express');
+const path = require('path');
+
+const roomsRouter = require('./routes/rooms');
+const messagesRouter = require('./routes/messages');
 
 const app = express();
 
-// нужно, чтобы корректно получить __dirname в ES-модулях
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// парсим JSON из запросов
+// Gjør at vi kan ta imot JSON i POST-forespørsler
 app.use(express.json());
 
-// раздаём статику (public/index.html и т.п.)
-app.use(express.static(path.join(__dirname, "..", "public")));
+// Serverer filer fra "public"-mappen (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// наши API-роуты
-app.use("/api/rooms", roomsRouter);
-app.use("/api/messages", messagesRouter);
+// API-endepunkter
+app.use('/api/rooms', roomsRouter);
+app.use('/api/messages', messagesRouter);
 
-export default app;
+module.exports = app;

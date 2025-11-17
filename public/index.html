@@ -14,11 +14,14 @@
         .then((res) => res.json())
         .then((rooms) => {
           const list = document.getElementById('rooms');
-          rooms.forEach((room) => {
+          rooms.forEach(room => {
             const li = document.createElement('li');
-            li.textContent = room.name;
+
+            //Linker til chat.html med riktig rom-id
+            li.innerHTML = `<a href="/chat.html?room=${room.id}">${room.name}</a>`;
+
             list.appendChild(li);
-          });
+          })
         })
         .catch((err) => console.error(err));
     </script>

@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+#messages {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+}
+.message {
+    margin-bottom: 10px;
+}
+.timestamp {
+    color: gray; font-size: 0.8em;
+}

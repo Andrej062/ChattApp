@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat room</title>
+    <title>ChattApp - Rom</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-    
-    <h1>Chat Rom</h1>
-    <h3 id="roomName">Rom</h3>
+    <div class="app">
+        <header class="header">
+            <a href="/" class="logo-link">
+                <h1 class="logo">ChattApp</h1>
+            </a>
+            <p class="tagline">Chat i valgt rom</p>
+        </header>
+        
+        <main class="chat-card">
+            <div class="chat-header">
+                <!-- Fra JS -->
+                 <h2 id="roomName" class="chat-title">Rom</h2>
+            </div>
 
-    <div id="messages"></div>
-
-    <br>
-
-    <input type="text" id="msgInput" placeholder="Skriv en melding..." size="40">
-    <button id="sendBtn">Send</button>
+            <div id="messages" class="messages">
+                <!-- Meldinger blir lagt fra script.js -->
+            </div>
+            
+            <form class="input-bar" onsubmit="return false;">
+                <input type="text" id="msgInput" class="input-field" placeholder="Skriv en mealding..." autocomplete="off">
+                <button type="button" id="sendBtn" class="btn-primary">Send</button>
+            </form>
+        </main>
+    </div>
 </body>
 </html>

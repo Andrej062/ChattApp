@@ -3,6 +3,11 @@
 const urlParams = new URLSearchParams(window.location.search);
 const roomId = urlParams.get('room');
 
+const roomNameEl = document.getElementById('roomName');
+if (roomNameEl && roomId) {
+  roomNameEl.textContent = `Rom #${roomId}`;
+}
+
 const messagesDiv = document.getElementById('messages');
 const sendBtn = document.getElementById('sendBtn');
 const msgInput = document.getElementById('msgInput');
@@ -18,8 +23,11 @@ async function loadMessages() {
         const el = document.createElement('div');
         el.className = "message";
         el.innerHTML = `
-        <strong>Bruker ${m.user_id}:</strong> ${m.content}
-        <div class="timestamp">${m.created_at}</div>
+            <div class="message-header">
+                <span class="message-user">Bruker ${m.user_id}</span>
+                <span class="message-time">${m.created_at}</span>
+            </div>
+            <div class="message-text">${m.content}</div>
         `;
         messagesDiv.appendChild(el);
     });
@@ -33,7 +41,7 @@ async function sendMessage() {
 
     await fetch(`/api/messages/${roomId}`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "Content-type": "application/json" },
         body: JSON.stringify({
             content,
             user_id: 1 //midlertidlig bruker

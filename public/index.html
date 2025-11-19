@@ -2,28 +2,48 @@
 <html lang="no">
   <head>
     <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChattApp</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>ChattApp</h1>
-    <p>Rom hentet fra /api/rooms:</p>
-    <ul id="rooms"></ul>
+    <div class="app">
+      <header class="header">
+        <h1 class="logo"> ChattApp</h1>
+        <p class="tagline"> En enkel chatteapp laget i Node.js og SQLite</p>
+      </header>
+
+      <main class="card">
+        <h2 class="card-title">Velg et chatterom</h2>
+        <p class="card-subtitle">Klikk på et rom for å gå inn i chatten.</p>
+
+        <ul id="rooms" class="room-list">
+          <!-- Fra JS -->
+        </ul>
+      </main>
+    </div>
 
     <script>
+      // henter alle rom fra API
       fetch('/api/rooms')
         .then((res) => res.json())
         .then((rooms) => {
           const list = document.getElementById('rooms');
           rooms.forEach(room => {
             const li = document.createElement('li');
+            li.className ='room-item';
 
             //Linker til chat.html med riktig rom-id
-            li.innerHTML = `<a href="/chat.html?room=${room.id}">${room.name}</a>`;
+            li.innerHTML = `
+              <a class="room-link" href="/chat.html?room=${room.id}">
+                <div class="room-name">${room.name}</div>
+                <div class="room-description">${room.description || ''}</div>
+              </a> 
+              `;
 
             list.appendChild(li);
           })
-        })
-        .catch((err) => console.error(err));
+        });
     </script>
   </body>
 </html>

@@ -147,7 +147,7 @@ npm install
 npm run dev
 
 
-## 🚀 Mulig videre utvikling
+## Mulig videre utvikling
 
 Hvis prosjektet skulle bygges videre, kunne man:
 

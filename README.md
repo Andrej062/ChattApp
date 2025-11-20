@@ -146,6 +146,7 @@ npm install
 # starte serveren med nodemon (utvikling)
 npm run dev
 
+```
 
 ## Mulig videre utvikling
 

@@ -131,7 +131,7 @@ Prosjektet er forenklet på flere områder:
 Disse avgrensningene er bevisste, fordi hovedmålet er å vise:
 
 - hvordan API og database henger sammen
-- hvordan frontend kan bruke API-et
+- hvordan frontend kan bruke API
 - at strukturen på prosjektet er ryddig og lett å forstå
 
 

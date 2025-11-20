@@ -1,5 +1,22 @@
 ## Status per nå
 
+## ⚠️ Avgrensninger i prosjektet
+
+Prosjektet er forenklet på flere områder:
+
+- Det er **ingen ekte innlogging** ennå. `user_id` settes statisk (f.eks. `1`) i koden når en melding sendes.
+- Ingen passordhåndtering eller sikkerhet er implementert (ingen hashing, ingen sesjoner).
+- Chatten er **ikke i sanntid** – siden må oppdatere meldinger ved å hente data fra serveren (ingen WebSocket / Socket.IO enda).
+- Det er ingen validering av input på klientsiden utover en enkel sjekk for tomme meldinger.
+
+Disse avgrensningene er bevisste, fordi hovedmålet er å vise:
+
+- hvordan API og database henger sammen
+- hvordan frontend kan bruke API
+- at strukturen på prosjektet er ryddig og lett å forstå
+
+---
+
 ## 📝 Prosjektbeskrivelse
 
 ChattApp er en enkel webapplikasjon der brukere kan gå inn i ulike chatterom og sende meldinger.  
@@ -119,21 +136,6 @@ Relasjoner:
 - Ett rom (`rooms.id`) kan ha mange meldinger (`messages.room_id`)
 - Én bruker (`users.id`) kan ha mange meldinger (`messages.user_id`)
 
-## ⚠️ Avgrensninger i prosjektet
-
-Prosjektet er forenklet på flere områder:
-
-- Det er **ingen ekte innlogging** ennå. `user_id` settes statisk (f.eks. `1`) i koden når en melding sendes.
-- Ingen passordhåndtering eller sikkerhet er implementert (ingen hashing, ingen sesjoner).
-- Chatten er **ikke i sanntid** – siden må oppdatere meldinger ved å hente data fra serveren (ingen WebSocket / Socket.IO enda).
-- Det er ingen validering av input på klientsiden utover en enkel sjekk for tomme meldinger.
-
-Disse avgrensningene er bevisste, fordi hovedmålet er å vise:
-
-- hvordan API og database henger sammen
-- hvordan frontend kan bruke API
-- at strukturen på prosjektet er ryddig og lett å forstå
-
 
 ---
 
@@ -155,5 +157,4 @@ Hvis prosjektet skulle bygges videre, kunne man:
 - legge til **brukersystem** med registrering, innlogging og ekte `user_id`
 - bruke **Socket.IO** for å gjøre chatten «live» uten å måtte laste siden på nytt
 - legge til støtte for å se **hvem som er online**
-- forbedre UI ytterligere (vise avatar, vise egne meldinger på høyre side osv.)
-- skrive flere tester og legge inn bedre feilhåndtering i API-et
+- brukeren kunne lage **et eget rom**

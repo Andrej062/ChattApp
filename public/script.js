@@ -43,6 +43,25 @@ function addMessage(m) {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+// Lytter etter klikk på "Delete"-knapper
+messagesDiv.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('delete-btn')) {
+    const id = e.target.getAttribute('data-id');
+
+    const res = await fetch(`/api/messages/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      // Fjerner HTML-elementet
+      e.target.closest('.message').remove();
+    }
+  }
+});
+
+
 // Konverterer UTC-tid til lokal tid uten sekunder
 function formatTime(utcString) {
     const date = new Date(utcString);

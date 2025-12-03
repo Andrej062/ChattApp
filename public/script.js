@@ -107,7 +107,7 @@ async function sendMessage() {
   }
 
   try {
-    // 1. Lagrer meldingen i databasen via API
+    // Lagrer meldingen i databasen via API
     const res = await fetch(`/api/messages/${roomId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -124,10 +124,10 @@ async function sendMessage() {
 
     const savedMessage = await res.json();
 
-    // 2. Tømmer input-feltet
+    // Tømmer input-feltet
     msgInput.value = '';
 
-    // 3. Sender meldingen videre til Socket.IO-serveren
+    // Sender meldingen videre til Socket.IO-serveren
     socket.emit('newMessage', savedMessage);
 
     // Ikke kaller loadMessages() her, fordi vi får meldingen tilbake via socket

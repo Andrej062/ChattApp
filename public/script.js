@@ -28,12 +28,14 @@ function addMessage(m) {
   el.className = 'message';
 
   el.innerHTML = `
-    <div class="message-header">
-      <span class="message-user">Bruker ${m.user_id}</span>
-      <span class="message-time">${formatTime(m.created_at)}</span>
-    </div>
-    <div class="message-text">${m.content}</div>
-  `;
+  <div class="message-header">
+    <span class="message-user">Bruker ${m.user_id}</span>
+    <span class="message-time">${formatTime(m.created_at)}</span>
+    <button class="delete-btn" data-id="${m.id}">Delete</button>
+  </div>
+  <div class="message-text">${m.content}</div>
+`;
+
 
   messagesDiv.appendChild(el);
 

@@ -67,3 +67,22 @@ router.post('/:roomId', (req, res) => {
 });
 
 module.exports = router;
+
+// Sletter en melding etter ID
+router.delete('/:id', (req, res) => {
+  const messageId = req.params.id;
+
+  const sql = `DELETE FROM messages WHERE id = ?`;
+
+  db.run(sql, [messageId], function (err) {
+    if (err) {
+      return res.status(500).json({ error: 'Klarte ikke å slette melding' });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Meldingen finnes ikke' });
+    }
+
+    return res.json({ success: true });
+  });
+});

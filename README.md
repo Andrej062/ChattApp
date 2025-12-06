@@ -1,18 +1,25 @@
 ## Status per nå
 
+- flere chatterom lagret i SQLite
+- mulighet til å opprette og slette rom fra forsiden
+- sending og lagring av meldinger per rom
+- visning av meldinger i hvert rom
+- enkel sanntidsoppdatering med Socket.IO (meldinger dukker opp hos alle som er inne i samme rom)
+- ryddig struktur i både backend (Express + SQLite) og frontend (HTML, CSS, JS)
+
 ## ⚠️ Avgrensninger i prosjektet
 
-Prosjektet er forenklet på flere områder:
+Prosjektet er fortsatt forenklet på flere områder:
 
-- Det er **ingen ekte innlogging** ennå. `user_id` settes statisk (f.eks. `1`) i koden når en melding sendes.
+- Det er ingen ekte innlogging ennå. `user_id` kan være hardkodet eller satt veldig enkelt.
 - Ingen passordhåndtering eller sikkerhet er implementert (ingen hashing, ingen sesjoner).
-- Chatten er **ikke i sanntid** – siden må oppdatere meldinger ved å hente data fra serveren (ingen WebSocket / Socket.IO enda).
-- Det er ingen validering av input på klientsiden utover en enkel sjekk for tomme meldinger.
+- Socket.IO brukes kun til å sende nye meldinger ut i rommet – det er ingen avansert håndtering som «hvem er online», typing-status, osv.
+- Det er enkel input-validering (f.eks. sjekk for tom melding), men ikke fullstendig validering overalt.
 
 Disse avgrensningene er bevisste, fordi hovedmålet er å vise:
 
 - hvordan API og database henger sammen
-- hvordan frontend kan bruke API
+- hvordan frontend kan bruke både REST-API (fetch) og sanntid (Socket.IO)
 - at strukturen på prosjektet er ryddig og lett å forstå
 
 ---
@@ -58,6 +65,12 @@ Frontend er laget med vanlig **HTML, CSS og JavaScript** uten rammeverk som Reac
 - hvordan frontend kommuniserer med backend via `fetch`
 - struktur, ikke avanserte biblioteker
 
+For sanntid bruker jeg **Socket.IO** fordi:
+
+- det gjør det enkelt å holde åpne forbindelser mellom klient og server
+- det støtter «rooms» (rom) som passer godt til chatterom
+- det er mye brukt i chat-løsninger og passer bra til skoleprosjekt
+
 
 #### API-endepunkter som fungerer
 
@@ -94,7 +107,51 @@ Frontend ligger i mappen `public/`.
 - Henter rom fra `GET /api/rooms` med `fetch(...)`.
 - For hvert rom lages en lenke:
   - `href="/chat.html?room=<id>"`
-- Når bruker klikker på et rom, åpnes **chat-siden** for det rommet.
+  - navn
+  - beskrivelse
+  - knapp Slett for å fjerne rommet
+  - Når bruker klikker på et rom, åpnes **chat-siden** for det rommet.
+
+### Har en enkel «admin»-seksjon for å opprette nye rom:
+
+- #roomNameInput – navn på rommet
+- #roomDescInput – beskrivelse (valgfritt)
+- #createRoomBtn – knapp for å opprette rom
+
+
+#### Viktige funksjoner i <script>:
+
+### Inneholder all logikk for chat-siden.
+
+Hoveddeler:
+
+- Henter roomId fra URL **(?room=1)**.
+- Kobler til 
+`Socket.IO: const socket = io(); socket.emit('joinRoom', roomId);`
+
+
+- Laster meldinger med loadMessages() (bruker GET /api/messages/:roomId).
+- Viser meldinger med addMessage(m).
+- Sender nye meldinger med `sendMessage(): fetch → POST /api/messages/:roomId (lagring i DB) socket.emit('newMessage', savedMessage) (sanntid til alle i rommet)`
+
+Lytter på nye meldinger fra serveren:
+`socket.on('broadcastMessage', (msg) => { addMessage(msg); });`
+
+
+## Bruker `formatTime()` for å vise pen, lokal tid uten sekunder.
+
+`loadRooms()`
+Henter alle rom fra /api/rooms og fyller listen i DOM.
+
+`addRoomToList(room)`
+Lager én <li> for hvert rom med lenke og slett-knapp.
+
+`createRoomBtn.addEventListener('click', ...)`
+Sender POST /api/rooms med navn og beskrivelse, og legger rommet inn i listen hvis alt går bra.
+
+`roomsListEl.addEventListener('click', ...)`
+Oppdager klikk på «Slett»-knapper, sender DELETE /api/rooms/:id og fjerner rommet fra DOM ved suksess.
+
 
 #### `public/chat.html`
 
@@ -155,6 +212,4 @@ npm run dev
 Hvis prosjektet skulle bygges videre, kunne man:
 
 - legge til **brukersystem** med registrering, innlogging og ekte `user_id`
-- bruke **Socket.IO** for å gjøre chatten «live» uten å måtte laste siden på nytt
 - legge til støtte for å se **hvem som er online**
-- brukeren kunne lage **et eget rom**

@@ -2,48 +2,172 @@
 <html lang="no">
   <head>
     <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChattApp</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div class="app">
       <header class="header">
-        <h1 class="logo"> ChattApp</h1>
-        <p class="tagline"> En enkel chatteapp laget i Node.js og SQLite</p>
+        <h1 class="logo">ChattApp</h1>
+        <p class="tagline">En enkel chatteapp laget i Node.js og SQLite</p>
       </header>
 
       <main class="card">
         <h2 class="card-title">Velg et chatterom</h2>
         <p class="card-subtitle">Klikk på et rom for å gå inn i chatten.</p>
 
+        <!-- Enkel admin-del for å lage rom -->
+        <section class="room-admin">
+          <h3>Administrer rom</h3>
+          <div class="room-form-row">
+            <input
+              type="text"
+              id="roomNameInput"
+              placeholder="Romnavn"
+            />
+            <input
+              type="text"
+              id="roomDescInput"
+              placeholder="Beskrivelse (valgfritt)"
+            />
+            <button id="createRoomBtn" class="btn-primary">
+              Lag rom
+            </button>
+          </div>
+          <p id="roomFormStatus" class="auth-status"></p>
+        </section>
+
+        <h3 style="margin-top: 16px;">Tilgjengelige chatterom</h3>
         <ul id="rooms" class="room-list">
           <!-- Fra JS -->
         </ul>
       </main>
     </div>
 
-    <script>
-      // henter alle rom fra API
-      fetch('/api/rooms')
-        .then((res) => res.json())
-        .then((rooms) => {
-          const list = document.getElementById('rooms');
-          rooms.forEach(room => {
-            const li = document.createElement('li');
-            li.className ='room-item';
+<script>
+  // Henter referanser til elementer på siden
+  const roomsListEl = document.getElementById('rooms');
+  const roomNameInput = document.getElementById('roomNameInput');
+  const roomDescInput = document.getElementById('roomDescInput');
+  const createRoomBtn = document.getElementById('createRoomBtn');
+  const roomFormStatus = document.getElementById('roomFormStatus');
 
-            //Linker til chat.html med riktig rom-id
-            li.innerHTML = `
-              <a class="room-link" href="/chat.html?room=${room.id}">
-                <div class="room-name">${room.name}</div>
-                <div class="room-description">${room.description || ''}</div>
-              </a> 
-              `;
+  // Lager ett <li>-element for et rom og legger det i listen
+  function addRoomToList(room) {
+    const li = document.createElement('li');
+    li.className = 'room-item';
+    li.dataset.id = room.id; // lagrer rom-id på elementet
 
-            list.appendChild(li);
-          })
+    li.innerHTML = `
+      <div class="room-row">
+        <a class="room-link" href="/chat.html?room=${room.id}">
+          <div class="room-name">${room.name}</div>
+          <div class="room-description">${room.description || ''}</div>
+        </a>
+        <button class="delete-room-btn">Slett</button>
+      </div>
+    `;
+
+    roomsListEl.appendChild(li);
+  }
+
+  // Henter alle rom fra API og viser dem i UI
+  async function loadRooms() {
+    // Tømmer listen først
+    roomsListEl.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/rooms');
+      if (!res.ok) {
+        console.error('Feil ved henting av rom, status:', res.status);
+        return;
+      }
+
+      const rooms = await res.json();
+      rooms.forEach((room) => addRoomToList(room));
+    } catch (err) {
+      console.error('Feil ved henting av rom:', err);
+    }
+  }
+
+  // Oppretter et nytt rom når vi klikker på "Lag rom"
+  createRoomBtn.addEventListener('click', async () => {
+    const name = roomNameInput.value.trim();
+    const description = roomDescInput.value.trim();
+
+    // Enkel validering
+    if (!name) {
+      roomFormStatus.textContent = 'Skriv inn et navn på rommet.';
+      roomFormStatus.style.color = '#f97373';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        roomFormStatus.textContent = data.error || 'Kunne ikke opprette rom';
+        roomFormStatus.style.color = '#f97373';
+        return;
+      }
+
+      // Viser melding om at rommet ble laget
+      roomFormStatus.textContent = `Opprettet rom: ${data.name}`;
+      roomFormStatus.style.color = '#4ade80';
+
+      // Tømmer input-feltene
+      roomNameInput.value = '';
+      roomDescInput.value = '';
+
+      // Legger til det nye rommet i listen uten å laste alt på nytt
+      addRoomToList(data);
+    } catch (err) {
+      console.error('Feil ved oppretting av rom:', err);
+      roomFormStatus.textContent = 'Feil ved oppretting av rom.';
+      roomFormStatus.style.color = '#f97373';
+    }
+  });
+
+  // Håndterer sletting når vi klikker på "Slett"-knapp i rom-listen
+  roomsListEl.addEventListener('click', async (e) => {
+    // Sjekker om det var en "Slett"-knapp vi klikket på
+    if (e.target.classList.contains('delete-room-btn')) {
+      const li = e.target.closest('.room-item');
+      const id = li.dataset.id;
+
+      const ok = confirm('Vil du slette dette rommet og alle meldinger i det?');
+      if (!ok) return;
+
+      try {
+        const res = await fetch(`/api/rooms/${id}`, {
+          method: 'DELETE'
         });
-    </script>
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          alert(result.error || 'Kunne ikke slette rom');
+          return;
+        }
+
+        // Fjerner rommet fra listen i UI
+        li.remove();
+      } catch (err) {
+        console.error('Feil ved sletting av rom:', err);
+        alert('Feil ved sletting av rom');
+      }
+    }
+  });
+
+  // Laster inn alle rom når siden åpnes
+  loadRooms();
+</script>
   </body>
 </html>

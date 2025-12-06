@@ -230,3 +230,46 @@ body{
 .delete-btn:hover {
   background: #ff2f2f;
 }
+
+.room-admin {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.7);
+}
+
+.room-form-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.room-form-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: #f9fafb;
+}
+
+.room-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-room-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+}
+
+.delete-room-btn:hover {
+  filter: brightness(1.1);
+}
